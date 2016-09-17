@@ -23,8 +23,16 @@ function createModelModule() {
 
     // this.fireNode = new sceneGraphModule.FireNode('fire', this.tailNode);
     // this.fireNode.translate(0,75);
+    this.nextLeft = 300;
+    this.nextRight = 500;
 
     this.bodyNode = new sceneGraphModule.BodyNode('body', this.bearNode);
+
+    this.rocksNode = new sceneGraphModule.RocksNode('rocks', this.rootNode);
+    this.onRockNode = new sceneGraphModule.OnRockNode('onRock', this.rocksNode);
+    this.onRockNode.translate(200, 550);
+    this.nextRockNode = new sceneGraphModule.NextRockNode('nextRock', this.rocksNode);
+    this.nextRockNode.translate(this.nextRight, 100);
 
     // this.handleNode = new sceneGraphModule.HandleNode('handle', this.bodyNode);
     // this.handleNode.translate(0,-95);
@@ -35,9 +43,12 @@ function createModelModule() {
     // this.headNode = new sceneGraphModule.HeadNode('head', this.spaceshipNode);
     // this.headNode.translate(0, -150);
 
-    this.bearNode.translate(200, 500);
+    this.bearNode.translate(200, 450);
 
     this.jump_distance = 400;
+    this.side = 'left'
+    this.nextLeft = 400;
+    this.nextRight = 600;
     // this.speed = -25;
     // this.powerUp = false;
     // this.move = false;

@@ -441,6 +441,64 @@ function createSceneGraphModule() {
         }
     });
 
+    var RocksNode = function() {
+        // Inherit the constructor of GraphNode.
+        GraphNode.apply(this, arguments);
+        // Override the local bounding box of this node. You might want to modify this.
+        this.localBoundingBox = {
+            x: -50,
+            y: -50,
+            w: 100,
+            h: 100
+        };
+    }
+
+    // Inherit all other methods of GraphNode.
+    _.extend(RocksNode.prototype, GraphNode.prototype, {
+        // Override the renderLocal function to draw itself in its own coordinate system.
+        renderLocal: function(context) {
+                        
+        }
+    });
+
+    var OnRockNode = function() {
+        GraphNode.apply(this, arguments);
+        
+        // this.isInteractableWithMouse = true;
+
+        this.localBoundingBox = {
+            x: -50,
+            y: -50,
+            w: 100,
+            h: 50
+        };
+    }
+    _.extend(OnRockNode.prototype, GraphNode.prototype, {
+        renderLocal: function(context) {
+            context.fillStyle = "rgb(174, 182, 191)"; // light gray
+            context.fillRect(this.localBoundingBox.x, this.localBoundingBox.y, this.localBoundingBox.w, this.localBoundingBox.h);
+        }
+    });
+
+    var NextRockNode = function() {
+        GraphNode.apply(this, arguments);
+        
+        // this.isInteractableWithMouse = true;
+
+        this.localBoundingBox = {
+            x: -50,
+            y: -50,
+            w: 80,
+            h: 30
+        };
+    }
+    _.extend(NextRockNode.prototype, GraphNode.prototype, {
+        renderLocal: function(context) {
+            context.fillStyle = "rgb(128, 139, 150)"; // dark gray
+            context.fillRect(this.localBoundingBox.x, this.localBoundingBox.y, this.localBoundingBox.w, this.localBoundingBox.h);
+        }
+    });
+
     /**
      * HandleNode is a child of the body node, representing the resizing handle of the spaceship.
      */ 
@@ -488,6 +546,9 @@ function createSceneGraphModule() {
         // TailNode: TailNode,
         // FireNode: FireNode,
         BodyNode: BodyNode,
+        RocksNode: RocksNode,
+        OnRockNode: OnRockNode,
+        NextRockNode: NextRockNode
         // HandleNode: HandleNode,
         // WingsNode: WingsNode
     };

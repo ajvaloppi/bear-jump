@@ -42,14 +42,26 @@ function createViewModule() {
     document.addEventListener('keydown', function(e) {
       // RIGHT
       if (e.keyCode === 39) {
-        self.model.bearNode.translate(self.model.jump_distance, 0);
-        self.update();
+        if (self.model.side == 'left') {
+          self.model.bearNode.translate(self.model.jump_distance, 0);
+          self.update();
+          self.model.side = 'right';
+        }
+        // else {
+        //   // jump up
+        // }
       }
 
       // LEFT
       if (e.keyCode === 37) {
-        self.model.bearNode.translate(-self.model.jump_distance, 0);
-        self.update();
+        if (self.model.side == 'right') {
+          self.model.bearNode.translate(-self.model.jump_distance, 0);
+          self.update();
+          self.model.side = 'left';
+        }
+        // else {
+        //   // jump up
+        // }
       }
     });
 
