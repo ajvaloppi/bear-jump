@@ -47,6 +47,7 @@ function createModelModule() {
     this.rightFall = [];
     this.leftFall = [0];
     this.repeat = [];
+    this.animating = false;
 
     this.nodes.push(this.onRockNode);
     this.nodes.push(this.nextRockNode);

@@ -4,13 +4,13 @@ function createViewModule() {
   var BearView = function(model, canvas) {
     var self = this;
 
-    this.RIGHTFALL = [];
-    this.LEFTFALL = [0];
-
     /**
      * Maintain the model.
      */
     this.model = model;
+    this.bearPos = 15;
+    this.goingDown = false;
+    this.jumping;
 
     /**
      * Maintain the canvas and its context.
@@ -18,12 +18,77 @@ function createViewModule() {
     this.canvas = canvas;
     this.context = canvas.getContext('2d');
 
+    this.keyDown = function (e) {
+
+    }
 
     this.update = function() {
         this.context.clearRect(0,0, canvas.width, canvas.height);
         this.model.rootNode.renderAll(this.context);
     };
 
+    // ANIMATIONS
+    var JumpUp = function(){
+      if (self.bearPos <= 0) {
+        if (self.goingDown) {
+          clearInterval(self.jumping);
+        }
+        self.bearPos = 14;
+        self.goingDown = true;
+      }
+        if (self.goingDown) {
+          self.model.bearNode.translate(0, self.bearPos);
+          self.update();
+          self.bearPos -= 1;
+        }
+        else {
+          self.model.bearNode.translate(0, -self.bearPos);
+          self.update();
+          self.bearPos -= 1;
+        }
+    }
+
+    var JumpRight = function(){
+      if (self.bearPos <= 0) {
+        if (self.goingDown) {
+          clearInterval(self.jumping);
+        }
+        self.bearPos = 14;
+        self.goingDown = true;
+      }
+        if (self.goingDown) {
+          self.model.bearNode.translate(self.bearPos, self.bearPos);
+          self.update();
+          self.bearPos -= 1;
+        }
+        else {
+          self.model.bearNode.translate(18, -self.bearPos);
+          self.update();
+          self.bearPos -= 1;
+        }
+    }
+
+    var JumpLeft = function(){
+      if (self.bearPos <= 0) {
+        if (self.goingDown) {
+          clearInterval(self.jumping);
+        }
+        self.bearPos = 14;
+        self.goingDown = true;
+      }
+        if (self.goingDown) {
+          self.model.bearNode.translate(-self.bearPos, self.bearPos);
+          self.update();
+          self.bearPos -= 1;
+        }
+        else {
+          self.model.bearNode.translate(-18, -self.bearPos);
+          self.update();
+          self.bearPos -= 1;
+        }
+    }
+
+    // JUMPING LOGIC
     this.jumpUp = function(side) {
       console.log("jump up");
       if (side == self.model.RIGHT) {
@@ -32,16 +97,27 @@ function createViewModule() {
       else {
         self.model.rightFall.push(side);
       }
+      self.jumping = setInterval(JumpUp, 1000/60);
+      self.goingDown = false;
+      self.bearPos = 15;
+      self.model.bearNode.translate(0, 1);
     }
 
     this.jumpInPlace = function(side) {
       console.log("jump in place");
+      self.jumping = setInterval(JumpUp, 1000/60);
+      self.goingDown = false;
+      self.bearPos = 15;
+      self.model.bearNode.translate(0, 1);
     }
 
     this.jumpLeft = function () {
       console.log("jump left");
       self.model.leftFall = [0, 1];
-      self.model.bearNode.translate(-self.model.jump_distance, 0);
+      self.jumping = setInterval(JumpLeft, 1000/60);
+      self.goingDown = false;
+      self.bearPos = 15;
+      self.model.bearNode.translate(-11, 1);
       self.model.onRockNode.translate(-self.model.jump_distance, 0);
       self.update();
       self.model.side = self.model.LEFT;
@@ -50,7 +126,10 @@ function createViewModule() {
     this.jumpRight = function () {
       console.log("jump right");
       self.model.rightFall = [1, 0];
-      self.model.bearNode.translate(self.model.jump_distance, 0);
+      self.jumping = setInterval(JumpRight, 1000/60);
+      self.goingDown = false;
+      self.bearPos = 15;
+      self.model.bearNode.translate(11, 1);
       self.model.onRockNode.translate(self.model.jump_distance, 0);
       self.update();
       self.model.side = self.model.RIGHT;
@@ -150,13 +229,28 @@ function createViewModule() {
      */ 
     document.addEventListener('keydown', function(e) {
       // RIGHT
+      console.log(self.model.animating)
       if (e.keyCode === 39) {
-        self.generateJump(self.model.RIGHT, self.model.LEFT, self.jumpRight);
+        if (self.model.animating == false) {
+          self.model.animating = true;
+          self.generateJump(self.model.RIGHT, self.model.LEFT, self.jumpRight);
+          self.model.animating = false;
+        }
+        else {
+          console.log("nope");
+        }
       }
 
       // LEFT
       if (e.keyCode === 37) {
-        self.generateJump(self.model.LEFT, self.model.RIGHT, self.jumpLeft);
+        if (self.model.animating == false) {
+          self.model.animating = true;
+          self.generateJump(self.model.LEFT, self.model.RIGHT, self.jumpLeft);
+          self.model.animating = false;
+        }
+        else {
+          console.log("nope")
+        }
       }
     });
 
