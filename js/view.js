@@ -22,6 +22,45 @@ function createViewModule() {
         this.model.rootNode.renderAll(this.context);
     };
 
+    this.jumpUp = function() {
+      console.log("jump up")
+
+    }
+
+    this.jumpLeft = function () {
+      console.log("jump left")
+      self.model.bearNode.translate(-self.model.jump_distance, 0);
+      self.model.onRockNode.translate(-self.model.jump_distance, 0);
+      self.update();
+      self.model.side = self.model.LEFT;
+    }
+
+    this.jumpRight = function () {
+      console.log("jump right")
+      self.model.bearNode.translate(self.model.jump_distance, 0);
+      self.model.onRockNode.translate(self.model.jump_distance, 0);
+      self.update();
+      self.model.side = self.model.RIGHT;
+    }
+
+    this.fallIn = function () {
+      console.log("fall in")
+    }
+
+    this.generateRock = function () {
+      var side = Math.floor((Math.random() * 2));
+      if (side == self.model.LEFT && self.model.nextRock == self.model.RIGHT) {
+        self.model.nextRockNode.translate(-self.model.rock_distance, 0);
+        self.update();
+        self.model.nextRock = self.model.LEFT;
+      }
+      else if (side == self.model.RIGHT && self.model.nextRock == self.model.LEFT){
+        self.model.nextRockNode.translate(self.model.rock_distance, 0);
+        self.update();
+        self.model.nextRock = self.model.RIGHT;
+      }
+    }
+
     /**
      * You should add the view as a listener to each node in the scene graph, so that the view can get 
      * updated when the model is changed.
@@ -34,6 +73,10 @@ function createViewModule() {
     // this.model.leftlegNode.addListener(this);
     this.model.bodyNode.addListener(this);
     this.model.bearNode.addListener(this);
+
+    this.model.onRockNode.addListener(this);
+    this.model.nextRockNode.addListener(this);
+    this.model.bearNode.addListener(this);
     // this.model.wingsNode.addListener(this);
 
     /**
@@ -41,27 +84,42 @@ function createViewModule() {
      */ 
     document.addEventListener('keydown', function(e) {
       // RIGHT
+      console.log("ROCK: " + self.model.nextRock)
+      console.log("BEAR: " + self.model.side)
       if (e.keyCode === 39) {
-        if (self.model.side == 'left') {
-          self.model.bearNode.translate(self.model.jump_distance, 0);
-          self.update();
-          self.model.side = 'right';
+        if (self.model.nextRock == self.model.RIGHT) {
+          if (self.model.side == self.model.LEFT) {
+            self.jumpRight();
+            self.generateRock();
+          }
+
+          else {
+            // jump up
+            self.jumpUp();
+            self.generateRock();
+          }
         }
-        // else {
-        //   // jump up
-        // }
+        else {
+          self.fallIn();
+        }
       }
 
       // LEFT
       if (e.keyCode === 37) {
-        if (self.model.side == 'right') {
-          self.model.bearNode.translate(-self.model.jump_distance, 0);
-          self.update();
-          self.model.side = 'left';
+        if (self.model.nextRock == self.model.LEFT) {
+          if (self.model.side == self.model.RIGHT) {
+            self.jumpLeft();
+            self.generateRock();
+          }
+
+          else {
+            self.jumpUp();
+            self.generateRock();
+          }
         }
-        // else {
-        //   // jump up
-        // }
+        else {
+          self.fallIn();
+        }
       }
     });
 

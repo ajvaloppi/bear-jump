@@ -14,6 +14,11 @@ function createModelModule() {
      */
     this.nodes = [];
 
+    this.LEFT = 0;
+    this.RIGHT = 1;
+
+    this.nextRock = this.RIGHT;
+
     this.rootNode = new sceneGraphModule.RootNode('scene');
 
     this.bearNode = new sceneGraphModule.BearNode('bear', this.rootNode);
@@ -23,42 +28,29 @@ function createModelModule() {
 
     // this.fireNode = new sceneGraphModule.FireNode('fire', this.tailNode);
     // this.fireNode.translate(0,75);
+    
+    this.bodyNode = new sceneGraphModule.BodyNode('body', this.bearNode);
+
     this.nextLeft = 300;
     this.nextRight = 500;
-
-    this.bodyNode = new sceneGraphModule.BodyNode('body', this.bearNode);
+    this.onLeft = 200;
+    this.onRight = 600;
+    this.bearY = 450;
+    this.onRockY = 550;
+    this.nextRockY = 100;
 
     this.rocksNode = new sceneGraphModule.RocksNode('rocks', this.rootNode);
     this.onRockNode = new sceneGraphModule.OnRockNode('onRock', this.rocksNode);
-    this.onRockNode.translate(200, 550);
+    this.onRockNode.translate(this.onLeft, this.onRockY);
     this.nextRockNode = new sceneGraphModule.NextRockNode('nextRock', this.rocksNode);
-    this.nextRockNode.translate(this.nextRight, 100);
+    this.nextRockNode.translate(this.nextRight, this.nextRockY);
 
-    // this.handleNode = new sceneGraphModule.HandleNode('handle', this.bodyNode);
-    // this.handleNode.translate(0,-95);
-
-    // this.wingsNode = new sceneGraphModule.WingsNode('wings', this.spaceshipNode);
-    // this.wingsNode.translate(0, 20);
-
-    // this.headNode = new sceneGraphModule.HeadNode('head', this.spaceshipNode);
-    // this.headNode.translate(0, -150);
-
-    this.bearNode.translate(200, 450);
+    this.bearNode.translate(this.onLeft, this.bearY);
 
     this.jump_distance = 400;
-    this.side = 'left'
-    this.nextLeft = 400;
-    this.nextRight = 600;
-    // this.speed = -25;
-    // this.powerUp = false;
-    // this.move = false;
-    // this.resize = false;
-    // this.clicked = null;
-    // this.on = null;
-    // this.originalX = 0;
-    // this.originalY = 0;
-    // this.tailRotation = 0;
-    // this.spaceshipRotation = 0;
+    this.rock_distance = 300;
+    this.side = this.LEFT
+
 
     /**
      * Push every node into the the nodes list.
@@ -67,6 +59,9 @@ function createModelModule() {
     // this.nodes.push(this.tailNode);
     // this.nodes.push(this.fireNode);
     // this.nodes.push(this.handleNode);
+    this.nodes.push(this.onRockNode);
+    this.nodes.push(this.nextRockNode);
+    this.nodes.push(this.rocksNode)
     this.nodes.push(this.bodyNode);
     this.nodes.push(this.bearNode);
     // this.nodes.push(this.rootNode);
