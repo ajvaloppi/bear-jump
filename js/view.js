@@ -1,9 +1,11 @@
 'use strict';
 
-
 function createViewModule() {
   var BearView = function(model, canvas) {
     var self = this;
+
+    this.RIGHTFALL = [];
+    this.LEFTFALL = [0];
 
     /**
      * Maintain the model.
@@ -22,13 +24,23 @@ function createViewModule() {
         this.model.rootNode.renderAll(this.context);
     };
 
-    this.jumpUp = function() {
-      console.log("jump up")
+    this.jumpUp = function(side) {
+      console.log("jump up");
+      if (side == self.model.RIGHT) {
+        self.model.leftFall.push(side);
+      }
+      else {
+        self.model.rightFall.push(side);
+      }
+    }
 
+    this.jumpInPlace = function(side) {
+      console.log("jump in place");
     }
 
     this.jumpLeft = function () {
-      console.log("jump left")
+      console.log("jump left");
+      self.model.leftFall = [0, 1];
       self.model.bearNode.translate(-self.model.jump_distance, 0);
       self.model.onRockNode.translate(-self.model.jump_distance, 0);
       self.update();
@@ -36,29 +48,89 @@ function createViewModule() {
     }
 
     this.jumpRight = function () {
-      console.log("jump right")
+      console.log("jump right");
+      self.model.rightFall = [1, 0];
       self.model.bearNode.translate(self.model.jump_distance, 0);
       self.model.onRockNode.translate(self.model.jump_distance, 0);
       self.update();
       self.model.side = self.model.RIGHT;
     }
 
-    this.fallIn = function () {
-      console.log("fall in")
+    this.placeNextRock = function(next, reset = false) {
+      if (reset) {
+        var distance = 0;
+      }
+      else if (next == self.model.LEFT) {
+        var distance = -self.model.rock_distance;
+      }
+      else {
+        var distance = self.model.rock_distance;
+      }
+      self.model.nextRockNode.translate(distance, 0);
+      self.update();
+      self.model.nextRock = next;
+    }
+
+    this.fallIn = function (side) {
+      console.log("fall in " + side);
+      if (side == self.model.RIGHT) {
+        self.model.repeat = self.model.rightFall
+      }
+      else{ 
+        self.model.repeat = self.model.leftFall
+      }
+      console.log(self.model.repeat);
+      // TODO: add rocks passing animation
+      side = self.model.repeat.shift();
+      console.log(self.model.repeat);
+      if (side == self.model.RIGHT) {
+        self.jumpRight();
+        self.placeNextRock(self.model.LEFT, true);
+      }
+      else {
+        self.jumpLeft();
+        self.placeNextRock(self.model.RIGHT, true);
+      }
     }
 
     this.generateRock = function () {
-      var side = Math.floor((Math.random() * 2));
+      if (self.model.repeat.length > 0) {
+        console.log("repeat")
+        side = self.model.repeat.pop();
+        console.log(self.model.repeat);
+      }
+      else {
+        var side = Math.floor((Math.random() * 2));
+      }
+
       if (side == self.model.LEFT && self.model.nextRock == self.model.RIGHT) {
-        self.model.nextRockNode.translate(-self.model.rock_distance, 0);
-        self.update();
-        self.model.nextRock = self.model.LEFT;
+        self.placeNextRock(self.model.LEFT)
       }
       else if (side == self.model.RIGHT && self.model.nextRock == self.model.LEFT){
-        self.model.nextRockNode.translate(self.model.rock_distance, 0);
-        self.update();
-        self.model.nextRock = self.model.RIGHT;
+        self.placeNextRock(self.model.RIGHT)
       }
+    }
+
+    this.generateJump = function(direction, opposite, jumpOver) {
+      if (self.model.nextRock == direction) {
+          if (self.model.side == opposite) {
+            jumpOver();
+            self.generateRock();
+          }
+          else {
+            // jump up
+            self.jumpUp(direction);
+            self.generateRock();
+          }
+        }
+        else {
+          if (self.model.side == direction) {
+            self.jumpInPlace(direction);
+          }
+          else {
+            self.fallIn(direction);
+          }
+        }
     }
 
     /**
@@ -66,66 +138,28 @@ function createViewModule() {
      * updated when the model is changed.
      */
     this.model.rootNode.addListener(this);
-    // this.model.headNode.addListener(this);
-    // this.model.tailNode.addListener(this);
-    // this.model.fireNode.addListener(this);
-    // this.model.rightlegNode.addListener(this);
-    // this.model.leftlegNode.addListener(this);
     this.model.bodyNode.addListener(this);
     this.model.bearNode.addListener(this);
 
     this.model.onRockNode.addListener(this);
     this.model.nextRockNode.addListener(this);
     this.model.bearNode.addListener(this);
-    // this.model.wingsNode.addListener(this);
 
     /**
      * Handle keydown events.
      */ 
     document.addEventListener('keydown', function(e) {
       // RIGHT
-      console.log("ROCK: " + self.model.nextRock)
-      console.log("BEAR: " + self.model.side)
       if (e.keyCode === 39) {
-        if (self.model.nextRock == self.model.RIGHT) {
-          if (self.model.side == self.model.LEFT) {
-            self.jumpRight();
-            self.generateRock();
-          }
-
-          else {
-            // jump up
-            self.jumpUp();
-            self.generateRock();
-          }
-        }
-        else {
-          self.fallIn();
-        }
+        self.generateJump(self.model.RIGHT, self.model.LEFT, self.jumpRight);
       }
 
       // LEFT
       if (e.keyCode === 37) {
-        if (self.model.nextRock == self.model.LEFT) {
-          if (self.model.side == self.model.RIGHT) {
-            self.jumpLeft();
-            self.generateRock();
-          }
-
-          else {
-            self.jumpUp();
-            self.generateRock();
-          }
-        }
-        else {
-          self.fallIn();
-        }
+        self.generateJump(self.model.LEFT, self.model.RIGHT, self.jumpLeft);
       }
     });
 
-    /**
-     * Update the view when first created.
-     */
     this.update();
   };
 

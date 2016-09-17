@@ -22,13 +22,6 @@ function createModelModule() {
     this.rootNode = new sceneGraphModule.RootNode('scene');
 
     this.bearNode = new sceneGraphModule.BearNode('bear', this.rootNode);
-
-    // this.tailNode = new sceneGraphModule.TailNode('tail', this.spaceshipNode);
-    // this.tailNode.translate(0, 75);
-
-    // this.fireNode = new sceneGraphModule.FireNode('fire', this.tailNode);
-    // this.fireNode.translate(0,75);
-    
     this.bodyNode = new sceneGraphModule.BodyNode('body', this.bearNode);
 
     this.nextLeft = 300;
@@ -48,25 +41,18 @@ function createModelModule() {
     this.bearNode.translate(this.onLeft, this.bearY);
 
     this.jump_distance = 400;
-    this.rock_distance = 300;
-    this.side = this.LEFT
+    this.rock_distance = 200;
+    this.side = this.LEFT;
+    this.repeat = false;
+    this.rightFall = [];
+    this.leftFall = [0];
+    this.repeat = [];
 
-
-    /**
-     * Push every node into the the nodes list.
-     */
-    // this.nodes.push(this.headNode);
-    // this.nodes.push(this.tailNode);
-    // this.nodes.push(this.fireNode);
-    // this.nodes.push(this.handleNode);
     this.nodes.push(this.onRockNode);
     this.nodes.push(this.nextRockNode);
     this.nodes.push(this.rocksNode)
     this.nodes.push(this.bodyNode);
     this.nodes.push(this.bearNode);
-    // this.nodes.push(this.rootNode);
-    // this.nodes.push(this.wingsNode);
-    
   };
 
   _.extend(BearModel.prototype, {
